@@ -26,7 +26,7 @@ resource "azurerm_key_vault_access_policy" "uai_kv_policy" {
 
 resource "azurerm_key_vault_secret" "admin_password" {
   name         = "vmAdminPassword"
-  value        = "P@ssword1234!"
+  value        = var.vm_admin_password
   key_vault_id = azurerm_key_vault.kv.id
 }
 
