@@ -1,0 +1,68 @@
+#cloud-config
+package_update: true
+package_upgrade: true
+packages:
+  - docker.io
+  - docker-compose
+
+runcmd:
+  - systemctl start docker
+  - systemctl enable docker
+  - groupadd docker
+  - usermod -aG docker azureuser
+
+  - mkdir -p /home/azureuser/telemetry
+  - cd /home/azureuser/telemetry
+
+  - |
+      cat > /home/azureuser/telemetry/docker-compose.yml <<EOF
+      version: "3.8"
+      services:
+        telemetry-service:
+          image: ghcr.io/your-org/telemetry-service:latest
+          ports:
+            - "3001:3001"
+          environment:
+            - NODE_ENV=production
+          depends_on:
+            - mongodb
+          restart: always
+
+        mongodb:
+          image: mongo
+          ports:
+            - "27017:27017"
+          volumes:
+            - mongo-data:/data/db
+          restart: always
+
+        prometheus:
+          image: prom/prometheus
+          ports:
+            - "9090:9090"
+          volumes:
+            - ./prometheus.yml:/etc/prometheus/prometheus.yml
+          restart: always
+
+        grafana:
+          image: grafana/grafana
+          ports:
+            - "3000:3000"
+          restart: always
+
+      volumes:
+        mongo-data:
+      EOF
+
+  - |
+      cat > /home/azureuser/telemetry/prometheus.yml <<EOF
+      global:
+        scrape_interval: 15s
+      scrape_configs:
+        - job_name: "telemetry-service"
+          static_configs:
+            - targets: ["telemetry-service:3001"]
+      EOF
+
+  - chown -R azureuser:azureuser /home/azureuser/telemetry
+  - su - azureuser -c "cd /home/azureuser/telemetry && docker-compose up -d"
