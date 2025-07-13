@@ -40,3 +40,8 @@ After deployment, you can access:
 - Telemetry API: `http://<VM_PUBLIC_IP>:3001`
 
 Login to Azure portal to get the VM public IP or check GitHub Actions output.
+
+
+##5 ARchitecture Diagram
+
+<img width="585" height="1544" alt="image" src="https://github.com/user-attachments/assets/218762a6-96c0-4d43-a549-5e434e8bdda1" />
