@@ -1,7 +1,7 @@
 # This Terraform configuration deploys a Linux Virtual Machine in Azure with a user-assigned identity and custom cloud-init script.
 
 resource "azurerm_linux_virtual_machine" "vm" {
-  name                = "demo-vm"
+  name                = "droe-gcs-vm"
   resource_group_name = var.resource_group
   location            = var.location
   size                = "Standard_B1s"
@@ -31,6 +31,6 @@ resource "azurerm_linux_virtual_machine" "vm" {
   custom_data = base64encode(file("../config/cloud-init.yaml"))
 
   tags = {
-    environment = "demo"
+    environment = "dev"
   }
 }
